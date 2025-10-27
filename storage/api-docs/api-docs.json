@@ -1,0 +1,1087 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Videogames API",
+        "description": "API REST para gestión de videojuegos y plataformas con autenticación OAuth 2.0",
+        "contact": {
+            "email": "admin@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Servidor Local de Desarrollo"
+        }
+    ],
+    "paths": {
+        "/api/v1/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login de usuario",
+                "description": "Autentica un usuario y devuelve un token Bearer",
+                "operationId": "b9b760991d94b179960cd7ddc93eedf2",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "admin@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login exitoso",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login exitoso"
+                                        },
+                                        "access_token": {
+                                            "type": "string",
+                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "Bearer"
+                                        },
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Admin User"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "admin@example.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "admin"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Credenciales incorrectas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Las credenciales proporcionadas son incorrectas."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Cerrar sesión",
+                "description": "Revoca el token del usuario autenticado",
+                "operationId": "b66dd8a7864f561822c01bc8339363fb",
+                "responses": {
+                    "200": {
+                        "description": "Sesión cerrada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sesión cerrada exitosamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/profile": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Ver perfil del usuario",
+                "description": "Obtiene la información del usuario autenticado",
+                "operationId": "daa8885644f031e9e48c1457dff266f0",
+                "responses": {
+                    "200": {
+                        "description": "Perfil obtenido exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Admin User"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "admin@example.com"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "admin"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/plataformas": {
+            "get": {
+                "tags": [
+                    "Plataformas"
+                ],
+                "summary": "Listar todas las plataformas",
+                "description": "Obtiene la lista completa de plataformas con el conteo de videojuegos",
+                "operationId": "2cfbc3841b923db4746a20e5de6d0d35",
+                "responses": {
+                    "200": {
+                        "description": "Lista de plataformas obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nombre": {
+                                                        "type": "string",
+                                                        "example": "PlayStation 5"
+                                                    },
+                                                    "fabricante": {
+                                                        "type": "string",
+                                                        "example": "Sony"
+                                                    },
+                                                    "videojuegos_count": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Plataformas"
+                ],
+                "summary": "Crear plataforma (Solo Admin)",
+                "description": "Crea una nueva plataforma. Requiere permisos de administrador",
+                "operationId": "4dae9d177dd781d734f220ca983ea04f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nombre"
+                                ],
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "Steam Deck"
+                                    },
+                                    "fabricante": {
+                                        "type": "string",
+                                        "example": "Valve"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Plataforma creada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Plataforma creada exitosamente"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 7
+                                                },
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "Steam Deck"
+                                                },
+                                                "fabricante": {
+                                                    "type": "string",
+                                                    "example": "Valve"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tienes permisos (solo admin)"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/plataformas/{id}": {
+            "get": {
+                "tags": [
+                    "Plataformas"
+                ],
+                "summary": "Ver plataforma por ID",
+                "description": "Obtiene una plataforma específica con sus videojuegos",
+                "operationId": "8695b3b71ea5682dc5cf9f6613990929",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la plataforma",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Plataforma encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "PlayStation 5"
+                                                },
+                                                "fabricante": {
+                                                    "type": "string",
+                                                    "example": "Sony"
+                                                },
+                                                "videojuegos": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "titulo": {
+                                                                "type": "string"
+                                                            },
+                                                            "anio_lanzamiento": {
+                                                                "type": "string",
+                                                                "format": "date"
+                                                            },
+                                                            "genero": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Plataforma no encontrada"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Plataformas"
+                ],
+                "summary": "Actualizar plataforma (Solo Admin)",
+                "description": "Actualiza una plataforma existente. Requiere permisos de administrador",
+                "operationId": "4273b760b15e96618bc243e756520c93",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la plataforma",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nombre": {
+                                        "type": "string",
+                                        "example": "Steam Deck OLED"
+                                    },
+                                    "fabricante": {
+                                        "type": "string",
+                                        "example": "Valve Corporation"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Plataforma actualizada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Plataforma actualizada exitosamente"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "nombre": {
+                                                    "type": "string"
+                                                },
+                                                "fabricante": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tienes permisos"
+                    },
+                    "404": {
+                        "description": "Plataforma no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Plataformas"
+                ],
+                "summary": "Eliminar plataforma (Solo Admin)",
+                "description": "Elimina una plataforma. Requiere permisos de administrador",
+                "operationId": "b597a978a56a7bef233e7cebb079ab67",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la plataforma",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Plataforma eliminada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Plataforma eliminada exitosamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tienes permisos"
+                    },
+                    "404": {
+                        "description": "Plataforma no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/plataformas/mas-popular": {
+            "get": {
+                "tags": [
+                    "Plataformas"
+                ],
+                "summary": "Obtener plataforma más popular",
+                "description": "Obtiene la plataforma con mayor cantidad de videojuegos",
+                "operationId": "b50c2cb10a4e2ac741281ee521a66c0d",
+                "responses": {
+                    "200": {
+                        "description": "Plataforma más popular obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nombre": {
+                                                    "type": "string",
+                                                    "example": "PC"
+                                                },
+                                                "fabricante": {
+                                                    "type": "string",
+                                                    "example": "Varios"
+                                                },
+                                                "videojuegos_count": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "videojuegos": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "titulo": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "La plataforma más popular es PC con 10 videojuegos"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No hay plataformas disponibles"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/videojuegos": {
+            "get": {
+                "tags": [
+                    "Videojuegos"
+                ],
+                "summary": "Listar todos los videojuegos",
+                "description": "Obtiene la lista completa de videojuegos con sus plataformas",
+                "operationId": "18b356275db7186c9b3b8c2611b21bd7",
+                "responses": {
+                    "200": {
+                        "description": "Lista de videojuegos obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "titulo": {
+                                                        "type": "string",
+                                                        "example": "The Legend of Zelda: Breath of the Wild"
+                                                    },
+                                                    "anio_lanzamiento": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2017-03-03"
+                                                    },
+                                                    "genero": {
+                                                        "type": "string",
+                                                        "example": "Aventura"
+                                                    },
+                                                    "plataformas": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 3
+                                                                },
+                                                                "nombre": {
+                                                                    "type": "string",
+                                                                    "example": "Nintendo Switch"
+                                                                },
+                                                                "fabricante": {
+                                                                    "type": "string",
+                                                                    "example": "Nintendo"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Videojuegos"
+                ],
+                "summary": "Crear videojuego (Solo Admin)",
+                "description": "Crea un nuevo videojuego. Requiere permisos de administrador",
+                "operationId": "6013d956fd639375583dce2b05d14fb3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "titulo",
+                                    "anio_lanzamiento",
+                                    "genero",
+                                    "plataformas"
+                                ],
+                                "properties": {
+                                    "titulo": {
+                                        "type": "string",
+                                        "example": "Super Mario Odyssey"
+                                    },
+                                    "anio_lanzamiento": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2017-10-27"
+                                    },
+                                    "genero": {
+                                        "type": "string",
+                                        "example": "Plataformas"
+                                    },
+                                    "plataformas": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            3
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Videojuego creado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Videojuego creado exitosamente"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "titulo": {
+                                                    "type": "string"
+                                                },
+                                                "anio_lanzamiento": {
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "genero": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tienes permisos (solo admin)"
+                    },
+                    "422": {
+                        "description": "Error de validación"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/videojuegos/{id}": {
+            "get": {
+                "tags": [
+                    "Videojuegos"
+                ],
+                "summary": "Ver videojuego por ID",
+                "description": "Obtiene un videojuego específico con sus plataformas",
+                "operationId": "c97467651dc03f3284acb8ec23d55ca4",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del videojuego",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Videojuego encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "titulo": {
+                                                    "type": "string",
+                                                    "example": "Elden Ring"
+                                                },
+                                                "anio_lanzamiento": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2022-02-25"
+                                                },
+                                                "genero": {
+                                                    "type": "string",
+                                                    "example": "RPG"
+                                                },
+                                                "plataformas": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "nombre": {
+                                                                "type": "string"
+                                                            },
+                                                            "fabricante": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Videojuego no encontrado"
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Videojuegos"
+                ],
+                "summary": "Actualizar videojuego (Solo Admin)",
+                "description": "Actualiza un videojuego existente. Requiere permisos de administrador",
+                "operationId": "c0b8a01ad6270804bf4e302dbbf3382b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del videojuego",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "titulo": {
+                                        "type": "string",
+                                        "example": "Super Mario Odyssey - Edición Deluxe"
+                                    },
+                                    "anio_lanzamiento": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2017-10-27"
+                                    },
+                                    "genero": {
+                                        "type": "string",
+                                        "example": "Aventura/Plataformas"
+                                    },
+                                    "plataformas": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            3
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Videojuego actualizado exitosamente"
+                    },
+                    "403": {
+                        "description": "No tienes permisos"
+                    },
+                    "404": {
+                        "description": "Videojuego no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Videojuegos"
+                ],
+                "summary": "Eliminar videojuego (Solo Admin)",
+                "description": "Elimina un videojuego. Requiere permisos de administrador",
+                "operationId": "842e6a645edda0846fa27f473b2f6895",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID del videojuego",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Videojuego eliminado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Videojuego eliminado exitosamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "No tienes permisos"
+                    },
+                    "404": {
+                        "description": "Videojuego no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/videojuegos/recientes": {
+            "get": {
+                "tags": [
+                    "Videojuegos"
+                ],
+                "summary": "Obtener videojuegos recientes",
+                "description": "Obtiene los 3 videojuegos más recientes agregados al sistema",
+                "operationId": "4a69ca62a23d61a59923faab4c8b03a6",
+                "responses": {
+                    "200": {
+                        "description": "Videojuegos recientes obtenidos exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "titulo": {
+                                                        "type": "string"
+                                                    },
+                                                    "anio_lanzamiento": {
+                                                        "type": "string",
+                                                        "format": "date"
+                                                    },
+                                                    "genero": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Ingresa tu token Bearer obtenido del endpoint de login",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "Endpoints de autenticación y gestión de sesión"
+        },
+        {
+            "name": "Videojuegos",
+            "description": "Endpoints para gestión de videojuegos (CRUD completo)"
+        },
+        {
+            "name": "Plataformas",
+            "description": "Endpoints para gestión de plataformas de videojuegos"
+        }
+    ]
+}
