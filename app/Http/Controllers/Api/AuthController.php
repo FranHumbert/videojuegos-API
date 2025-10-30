@@ -81,26 +81,99 @@ class AuthController extends Controller
         ], 200);
     }
 
-/**
- * @OA\Post(
- *     path="/api/v1/logout",
- *     tags={"Authentication"},
- *     summary="Cerrar sesión",
- *     description="Revoca el token del usuario autenticado",
- *     security={{"bearerAuth":{}}},
- *     @OA\Response(
- *         response=200,
- *         description="Sesión cerrada exitosamente",
- *         @OA\JsonContent(
- *             @OA\Property(property="message", type="string", example="Sesión cerrada exitosamente")
- *         )
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="No autenticado"
- *     )
- * )
- */
+    /**
+     * @OA\Post(
+     *     path="/api/v1/register",
+     *     tags={"Authentication"},
+     *     summary="Registrar nuevo usuario",
+     *     description="Registra un nuevo usuario con rol 'user' por defecto",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","email","password","password_confirmation"},
+     *             @OA\Property(property="name", type="string", example="Juan Pérez"),
+     *             @OA\Property(property="email", type="string", format="email", example="juan@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="password123"),
+     *             @OA\Property(property="password_confirmation", type="string", format="password", example="password123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Usuario registrado exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Usuario registrado exitosamente"),
+     *             @OA\Property(property="access_token", type="string", example="eyJ0eXAiOiJKV1QiLCJhbGc..."),
+     *             @OA\Property(property="token_type", type="string", example="Bearer"),
+     *             @OA\Property(
+     *                 property="user",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=3),
+     *                 @OA\Property(property="name", type="string", example="Juan Pérez"),
+     *                 @OA\Property(property="email", type="string", example="juan@example.com"),
+     *                 @OA\Property(property="role", type="string", example="user")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Error de validación",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The email has already been taken.")
+     *         )
+     *     )
+     * )
+     */
+    public function register(Request $request): JsonResponse
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'user',
+            'email_verified_at' => now(),
+        ]);
+
+        $token = $user->createToken('auth-token')->accessToken;
+
+        return response()->json([
+            'message' => 'Usuario registrado exitosamente',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+            ],
+        ], 201);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/v1/logout",
+     *     tags={"Authentication"},
+     *     summary="Cerrar sesión",
+     *     description="Revoca el token del usuario autenticado",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Sesión cerrada exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Sesión cerrada exitosamente")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado"
+     *     )
+     * )
+     */
 
     public function logout(Request $request): JsonResponse
     {
@@ -112,32 +185,32 @@ class AuthController extends Controller
     }
 
     /**
- * @OA\Get(
- *     path="/api/v1/profile",
- *     tags={"Authentication"},
- *     summary="Ver perfil del usuario",
- *     description="Obtiene la información del usuario autenticado",
- *     security={{"bearerAuth":{}}},
- *     @OA\Response(
- *         response=200,
- *         description="Perfil obtenido exitosamente",
- *         @OA\JsonContent(
- *             @OA\Property(
- *                 property="user",
- *                 type="object",
- *                 @OA\Property(property="id", type="integer", example=1),
- *                 @OA\Property(property="name", type="string", example="Admin User"),
- *                 @OA\Property(property="email", type="string", example="admin@example.com"),
- *                 @OA\Property(property="role", type="string", example="admin")
- *             )
- *         )
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="No autenticado"
- *     )
- * )
- */
+     * @OA\Get(
+     *     path="/api/v1/profile",
+     *     tags={"Authentication"},
+     *     summary="Ver perfil del usuario",
+     *     description="Obtiene la información del usuario autenticado",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Perfil obtenido exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="user",
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Admin User"),
+     *                 @OA\Property(property="email", type="string", example="admin@example.com"),
+     *                 @OA\Property(property="role", type="string", example="admin")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado"
+     *     )
+     * )
+     */
 
     public function profile(Request $request): JsonResponse
     {
