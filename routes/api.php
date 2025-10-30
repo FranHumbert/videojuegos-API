@@ -12,6 +12,7 @@ Route::prefix('v1')->group(function () {
     
     // Authentication Routes (Public)
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
 
     // Protected Routes (Require Authentication)
     Route::middleware('auth:api')->group(function () {
